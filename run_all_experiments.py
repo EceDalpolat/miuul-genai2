@@ -169,7 +169,7 @@ def call_gemini(prompt: str, temperature: float, system_msg: str) -> str:
     import google.generativeai as genai
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
     model = genai.GenerativeModel(
-        "gemini-2.0-flash-lite",
+        "gemini-2.5-flash",
         system_instruction=system_msg
     )
     r = model.generate_content(

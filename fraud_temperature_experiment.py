@@ -153,7 +153,7 @@ def run_gemini(temperature: float) -> str:
 
     # Model nesnesi oluştur
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
+        model_name="gemini-2.5-flash",
         # Sistem talimatını burada veriyoruz
         system_instruction="Sen bir fraud detection uzmanısın."
     )
