@@ -169,7 +169,7 @@ def call_gemini(prompt: str, temperature: float, system_msg: str) -> str:
     import google.generativeai as genai
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
     model = genai.GenerativeModel(
-        "gemini-1.5-flash",
+        "gemini-2.0-flash-lite",
         system_instruction=system_msg
     )
     r = model.generate_content(
@@ -183,7 +183,7 @@ def call_cohere(prompt: str, temperature: float, system_msg: str) -> str:
     import cohere
     co = cohere.ClientV2(api_key=os.getenv("COHERE_API_KEY"))
     r  = co.chat(
-        model="command-r-plus",
+        model="command-r-plus-08-2024",
         temperature=temperature,
         messages=[
             {"role": "system", "content": system_msg},

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  experiments:
+    build: .
+    container_name: genai_experiments
+    # .env dosyasındaki API anahtarlarını otomatik olarak içeri alır
+    env_file:
+      - .env
+    # Tarayıcıdan erişim için port yönlendirmesi
+    ports:
+      - "8501:8501"
+    # Host makinedeki klasörü container içine bağlar
+    # Böylece üretilen .json sonuç dosyaları senin bilgisayarında da görünür
+    volumes:
+      - .:/app
+    # Konteyner çalıştığında varsayılan olarak Streamlit arayüzünü açar
+    command: streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0

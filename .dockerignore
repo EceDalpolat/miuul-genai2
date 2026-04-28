@@ -1,0 +1,17 @@
+# Git ve ortam dosyaları
+.git
+.gitignore
+.env
+
+# Python önbellek dosyaları
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Sanal ortam
+venv/
+env/
+.venv/
+
+# Deney sonuçları (imajın içine kopyalanmasına gerek yok)
+*.json
