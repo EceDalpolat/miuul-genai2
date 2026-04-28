@@ -60,7 +60,7 @@ pip install -r requirements.txt
 ```bash
 streamlit run streamlit_app.py
 ```
-*(Dilerseniz sadece tek bir deneyi de çalıştırabilirsiniz: `python fraud_temperature_experiment.py`)*
+*(Dilerseniz sadece tek bir deneyi de çalıştırabilirsiniz: `python3 sales_temperature_experiment.py`)*
 
 ---
 

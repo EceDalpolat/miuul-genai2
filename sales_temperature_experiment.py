@@ -27,10 +27,18 @@ Kurulum & Çalıştırma:
 ========================================================
 """
 
+
+
+
+
 import os
 import json
 import time
 from datetime import datetime
+
+
+
+
 
 
 # ============================================================
@@ -220,46 +228,81 @@ def run_cohere(temperature: float) -> str:
 
 def satis_analizi_yap(sonuc_t0: str, sonuc_t7: str) -> dict:
     """
-    Satış tahmini bağlamında iki temperature yanıtını karşılaştırır.
-
+    AMACI: Satış tahmini bağlamında iki temperature yanıtını karşılaştırır.
+    
+    Temperature 0.0 (düşük): Daha yapılandırılmış, ölçülü, riskli ifadeler az
+    Temperature 0.7 (yüksek): Daha zengin ama spekülatif, hallüsinasyon riski yüksek
+    
     Fraud detection analizinden farkı:
     - Sayısal tahmin üretip üretmediğini kontrol ediyoruz (yasak!)
     - Context dışı bağlam kullanımını tespit ediyoruz
     - Güven seviyesi ifadelerini sayıyoruz
+    
+    DÖNDÜRÜYOR: Her temperature için risk skorları ve uyarı notu
     """
 
-    # ── Yasak ifadeler: LLM kesinlikle sayısal tahmin vermemeli ──
+    # ── KONTROL 1: Yasak ifadeler ──
+    # LLM'nin LSTM tahminini "kendiveya sayısal tahmin üretmesi" yasak!
+    # Örneğin: "50.000 adet satılacak" ← BU YASAK (LLM'nin işi değil)
+    # Doğru: "LSTM tahmininin %10 yukarıya çekilmesi uygun olabilir" ← BU UYGUN
     yasak_ifadeler = [
-        "adet olacak", "birim satılacak", "units will be",
-        "forecast is", "prediction:", "tahminim:"
+        "adet olacak",              # Sayısal tahmin yapıyor
+        "birim satılacak",          # Kesin sayı veriyorum
+        "units will be",            # İngilizce aynısı
+        "forecast is",              # Kendi tahmini veriyor
+        "prediction:",              # Tahmin üretiyorum
+        "tahminim:"                 # Türkçe aynısı
     ]
 
-    # ── Aşırı yorum belirteçleri ──
+    # ── KONTROL 2: Aşırı yorum belirteçleri ──
+    # LLM'nin Context'te olmayan bilgiler ekleme (hallüsinasyon)
+    # Context'te verilmiş: Anneler Günü, rakip kampanyası, hava, yeni ürün
+    # NOT öncede verilmeyen şeyler eklemesi: sosyal medya trendleri, global faktörler vs.
     asiri_yorum = [
-        "sosyal medya", "viral", "influencer", "global trend",
-        "ekonomik kriz", "döviz", "enflasyon"  # Context'te olmayan bilgiler
+        "sosyal medya",             # Context'te yok
+        "viral",                    # Context'te yok
+        "influencer",               # Context'te yok
+        "global trend",             # Context'te yok
+        "ekonomik kriz",            # Context'te yok
+        "döviz",                    # Context'te yok
+        "enflasyon"                 # Context'te yok
     ]
 
-    # ── Sağlıklı belirsizlik ifadeleri (iyi şey!) ──
+    # ── KONTROL 3: Sağlıklı belirsizlik ifadeleri (İYİ ŞEY!) ──
+    # LLM'nin "emin değilim" demesi aslında doğru!
+    # Çünkü: LSTM'nin göremediği faktörler var, tam bilgi yok
+    # Bu ifadeler OLUMLU bir işaret:
     saglikli_belirsizlik = [
-        "belirlenemez", "yetersiz veri", "bilinmiyor",
-        "cannot be determined", "insufficient data"
+        "belirlenemez",             # Burada ürettiğim veri yetersiz
+        "yetersiz veri",            # Veri eksikliği var
+        "bilinmiyor",               # Bilemiyorum
+        "cannot be determined",     # İngilizce aynısı
+        "insufficient data"         # İngilizce aynısı
     ]
 
+    # ── YARDIMCI FONKSIYON: Kelime sayıcı ──
+    # Metin içinde belirtilen kelimeler kaç kez geçiyor? Bul ve say.
+    # Örneğin: say("adet olacak çok hızlı", ["adet olacak"]) = 1
     def say(metin: str, kelimeler: list) -> int:
         return sum(metin.lower().count(k.lower()) for k in kelimeler)
 
+    # ── SONUÇ OLUŞTUR ──
     return {
+        # Temperature 0.0 analizi
         "temp_0.0": {
-            "yasak_sayi_tahmini": say(sonuc_t0, yasak_ifadeler),
-            "asiri_yorum_riski":  say(sonuc_t0, asiri_yorum),
-            "saglikli_belirsiz":  say(sonuc_t0, saglikli_belirsizlik),
+            "yasak_sayi_tahmini": say(sonuc_t0, yasak_ifadeler),      # Kaç kez kesin sayı önerdi?
+            "asiri_yorum_riski":  say(sonuc_t0, asiri_yorum),         # Kaç kez context dışı ekledi?
+            "saglikli_belirsiz":  say(sonuc_t0, saglikli_belirsizlik),# Belirsizliği kaç kez ifade etti?
         },
+        # Temperature 0.7 analizi
         "temp_0.7": {
             "yasak_sayi_tahmini": say(sonuc_t7, yasak_ifadeler),
             "asiri_yorum_riski":  say(sonuc_t7, asiri_yorum),
             "saglikli_belirsiz":  say(sonuc_t7, saglikli_belirsizlik),
         },
+        # ── SON UYARI ──
+        # T=0.7 eğer context dışı bilgi eklediyse → ⚠️ Uyar
+        # T=0.7 eğer sadece verilen bilgileri kullandıysa → ✅ Tamam
         "uyari": (
             "⚠️ T=0.7 context dışı bilgi kullanmış olabilir!"
             if say(sonuc_t7, asiri_yorum) > 0 else "✅ Her iki temp context içinde kaldı"
@@ -269,10 +312,23 @@ def satis_analizi_yap(sonuc_t0: str, sonuc_t7: str) -> dict:
 
 # ============================================================
 # ADIM 5: ANA DENEY FONKSİYONU
+# Bu fonksiyon tüm deneyi koordine eder ve sonuçları kaydeder
 # ============================================================
 
 def run_experiment():
-    """Satış tahmini temperature deneyini çalıştırır."""
+    """
+    AMACI: Satış tahmini temperature deneyini çalıştırır.
+    
+    YAPTIĞI:
+    1. Üç AI modeline (GPT, Gemini, Cohere) aynı prompt'u gönder
+    2. Her model için iki temperature (0.0 ve 0.7) test et
+    3. Tüm sonuçları analiz et ve karşılaştır
+    4. Sonuçları JSON dosyasına kaydet
+    
+    AMAÇ:
+    Temperature seçiminin LLM'in sayısal tahmin yapmasına, 
+    hallüsinasyona veya context dışına çıkmasına nasıl etki ettiğini görmek.
+    """
     print("=" * 65)
     print("SATIŞ TAHMİNİ – TEMPERATURE DENEYİ BAŞLADI")
     print(f"Zaman: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -280,52 +336,67 @@ def run_experiment():
     print("\nNot: Bu deney fraud detection'dan farklı!")
     print("     LLM'in tahmin üretmeden yorum yapıp yapamadığını test ediyoruz.\n")
 
+    # ── ADIM 1: Test edecek AI modellerini tanımla ──
+    # Her model için bir fonksiyon var: run_gpt(), run_gemini(), run_cohere()
+    # Bu fonksiyonlar API'ye bağlanıp prompt'u gönderiyor
     providers = {
-        "GPT":    run_gpt,
-        "Gemini": run_gemini,
-        "Cohere": run_cohere
+        "GPT":    run_gpt,      # OpenAI's GPT-4o
+        "Gemini": run_gemini,   # Google's Gemini 2.5 Flash
+        "Cohere": run_cohere    # Cohere's Command R+
     }
 
+    # ── ADIM 2: Sonuçları depolamak için boş sözlük ──
     results = {}
 
+    # ── ADIM 3: Her model için (GPT, Gemini, Cohere) ──
     for provider_name, run_fn in providers.items():
         results[provider_name] = {}
         print(f"\n{'─' * 65}")
         print(f"  SAĞLAYICI: {provider_name}")
         print(f"{'─' * 65}")
 
+        # ── Bu model'den gelen çıktıları geçici tutmak için ──
+        # (0.0 ve 0.7 temperature'dan alınan yanıtlar)
         outputs = {}
 
-        for temp in TEMPERATURES:
+        # ── ADIM 4: Her temperature değerini test et ──
+        for temp in TEMPERATURES:  # [0.0, 0.7]
             print(f"\n  🌡️  Temperature = {temp}")
             print("  " + "·" * 50)
 
             try:
+                # ── API'ye istek gönder ve yanıt al ──
                 baslangic = time.time()
-                output    = run_fn(temp)
+                output    = run_fn(temp)  # run_gpt(temp) / run_gemini(temp) / run_cohere(temp)
                 gecen     = time.time() - baslangic
 
+                # ── Sonuçları kaydet ──
                 results[provider_name][f"temp_{temp}"] = {
-                    "output":      output,
-                    "elapsed_sec": round(gecen, 2),
-                    "char_count":  len(output)
+                    "output":      output,           # LLM'nin yanıtı
+                    "elapsed_sec": round(gecen, 2),  # Kaç saniye sürdü?
+                    "char_count":  len(output)       # Kaç karakterlik yanıt?
                 }
                 outputs[temp] = output
 
-                print(f"\n{output[:600]}{'...' if len(output) > 600 else ''}")
+                # ── Ekrana yazdır ──
+                print(f"\n{output[:600]}{'...' if len(output) > 600 else ''}")  # İlk 600 karakter
                 print(f"\n  ⏱️  {gecen:.2f}s | {len(output)} karakter")
 
             except Exception as e:
+                # ── Hata olursa kaydet ──
                 hata = f"HATA [{type(e).__name__}]: {str(e)}"
                 results[provider_name][f"temp_{temp}"] = {"error": hata}
                 outputs[temp] = ""
                 print(f"\n  ❌ {hata}")
 
-        # Satışa özel analiz
+        # ── ADIM 5: İki temperature'ın çıktısını karşılaştır ──
+        # (satis_analizi_yap() fonksiyonunu çalıştır)
         if outputs.get(0.0) and outputs.get(0.7):
+            # ── Analiz yap ──
             analiz = satis_analizi_yap(outputs[0.0], outputs[0.7])
             results[provider_name]["analiz"] = analiz
 
+            # ── Sonuçları ekrana yazdır ──
             print(f"\n  📊 SATIŞ ANALİZİ ({provider_name}):")
             print(f"     T=0.0 → yasak sayısal tahmin: {analiz['temp_0.0']['yasak_sayi_tahmini']} | "
                   f"aşırı yorum: {analiz['temp_0.0']['asiri_yorum_riski']}")
@@ -333,21 +404,28 @@ def run_experiment():
                   f"aşırı yorum: {analiz['temp_0.7']['asiri_yorum_riski']}")
             print(f"     {analiz['uyari']}")
 
-    # Kaydet
+    # ── ADIM 6: Tüm sonuçları JSON dosyasına kaydet ──
+    # (böylece daha sonra inceleyebilirsiniz)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename  = f"sales_temperature_results_{timestamp}.json"
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 
+    # ── ADIM 7: Deney bitişini göster ──
     print(f"\n\n{'=' * 65}")
     print(f"DENEY TAMAMLANDI → {filename}")
     print("=" * 65)
 
+    # ── ADIM 8: Değerlendirme soruları (Siz cevaplayacaksınız!) ──
     print("\n💡 DEĞERLENDİRME SORULARI:")
     print("   • T=0.7 context'te olmayan bilgiler ekledi mi?")
+    print("     (Örn: global trend, döviz, influencer vs... derken")
     print("   • T=0.0 'belirlenemez' ifadelerini doğru yerde kullandı mı?")
+    print("     (Emin değilse belirsizlik ifade etmesi doğru mu?)")
     print("   • Hangi temperature audit trail için daha uygun?")
+    print("     (İnsan onayı gerekli işlemler için hangisi güvenli?)")
     print("   • LLM hiç sayısal tahmin üretti mi? (Yasak olması gerekiyor!)")
+    print("     (Örn: '50.000 adet satılacak' şeklinde kendi tahmini yapması)")
 
     return results
 
