@@ -1,0 +1,30 @@
+{
+  "fraud": {
+    "gpt": {
+      "temp_0.0": {
+        "output": "- Recommendation: xgboost\n- Reasoning:\n  - XGBoost modelinin recall değeri 0.61 ile en yüksek seviyededir, bu da false negative'leri azaltarak finansal kayıpları minimize eder.\n  - Precision değeri 0.74 ile kabul edilebilir seviyededir, bu da manuel inceleme kapasitesinin sınırlı olduğu durumda daha az yanlış pozitif sonuç üreterek operasyonel yükü azaltır.\n  - XGBoost, genellikle hızlı çalışabilen bir modeldir ve 250 ms yanıt süresi kısıtını karşılayabilir.\n  - Modelin F1-score'u (0.67), diğer modellerle karşılaştırıldığında en yüksek seviyededir, bu da genel dengeyi sağlar.\n- Risks:\n  - XGBoost modelinin karmaşıklığı, modelin bakımını ve güncellemelerini zorlaştırabilir.\n  - Yanıt süresi kısıtı, veri büyüklüğüne ve sistem altyapısına bağlı olarak zorlanabilir.\n  - Modelin performansı, veri setindeki değişikliklere karşı hassas olabilir.\n- Next Actions:\n  - XGBoost modelinin yanıt süresini test ortamında ölçerek 250 ms kısıtını karşıladığından emin olun.\n  - Modelin performansını izlemek ve gerektiğinde yeniden eğitmek için bir izleme ve güncelleme stratejisi geliştirin.\n  - Manuel inceleme sürecini optimize etmek için yanlış pozitif oranını daha da azaltacak ek özellik mühendisliği veya model ayarlamaları yapın.\n  - Finansal kayıpları daha da azaltmak için modelin recall değerini artırmaya yönelik araştırmalar yapın.",
+        "elapsed_sec": 6.28,
+        "char_count": 1340
+      },
+      "temp_0.7": {
+        "output": "- Recommendation: xgboost\n\n- Reasoning:\n  - XGBoost modelinin recall değeri (0.61), diğer modellere göre en yüksektir. Bu, daha az false negative üreterek potansiyel finansal kayıpları azaltabilir.\n  - Precision değeri (0.74), düşük manuel inceleme kapasitesi göz önünde bulundurulduğunda kabul edilebilir seviyededir, yani yanlış pozitiflerin sayısı nispeten düşük olacaktır.\n  - F1-score hesaplaması için: \n    - F1-score = 2 * (Precision * Recall) / (Precision + Recall) = 2 * (0.74 * 0.61) / (0.74 + 0.61) ≈ 0.67\n    - XGBoost'un F1-score'u, diğer modellere göre en iyi dengeyi sunuyor.\n  - XGBoost genellikle hızlı inference süreleri sunar ve 250 ms yanıt süresi kısıtını karşılaması muhtemeldir. Ancak bu, modelin özel implementasyonuna bağlı olarak bu veri seti ile belirlenemez.\n\n- Risks:\n  - XGBoost'un latency gereksinimlerini kesinlikle karşılayıp karşılamayacağı bu veri seti ile belirlenemez.\n  - XGBoost'un karmaşıklığı, deployment ve bakım süreçlerini lojistik regresyona göre daha zor hale getirebilir.\n  - Modelin karmaşıklığı nedeniyle, overfitting veya modelin yanlış anlaşılması gibi riskler olabilir.\n\n- Next Actions:\n  - XGBoost modelinin gerçek dünya latency performansını test edin.\n  - Modelin sürekli izlenmesi ve performansının değerlendirilmesi için bir izleme sistemi kurun.\n  - Gerekirse, manuel inceleme sürecini optimize edecek stratejiler geliştirin.\n  - Modelin eğitimi ve değerlendirilmesi için veri setinin dengelenmesi veya modelin yeniden eğitilmesi gibi adımları değerlendirin.",
+        "elapsed_sec": 4.53,
+        "char_count": 1516
+      }
+    }
+  },
+  "sales": {
+    "gpt": {
+      "temp_0.0": {
+        "output": "- Mevcut Tahmin Değerlendirmesi: \n  - Güçlü Yönler: LSTM modeli, geniş bir veri seti üzerinde eğitilmiş ve SMAPE değeri 13.2 ile makul bir doğruluk seviyesine sahip. \n  - Zayıf Yönler: Model, dış faktörleri (örneğin, özel günler, rakip kampanyaları) doğrudan hesaba katmayabilir.\n\n- Ayarlama Önerisi: \n  - Gerekli\n\n- Ayarlama Yönü ve Aralığı: \n  - Yukarı %5-%10\n\n- Gerekçe: \n  - Anneler Günü gibi özel günler genellikle satışlarda artışa neden olur. LSTM modeli bu tür özel günleri doğrudan hesaba katmayabilir, bu nedenle tahminin yukarı yönlü ayarlanması mantıklıdır.\n  - Rakip firmanın %30 indirim kampanyası, pazar payını etkileyebilir ve bu durum satışları olumsuz etkileyebilir. Ancak, bu etkinin boyutu belirsizdir.\n  - Yeni ürün koleksiyonu lansmanı, genellikle satışları artırır. Bu da tahminin yukarı yönlü ayarlanmasını destekler.\n  - Hava sıcaklıklarının normalin üzerinde olması, belirli ürün kategorilerinde (örneğin, yazlık ürünler) satış artışına neden olabilir.\n\n- Belirsizlik Notu: \n  - Rakip kampanyasının etkisi ve hava durumu gibi faktörlerin satışlar üzerindeki kesin etkisi bu bilgiyle belirlenemez.\n\n- Güven Seviyesi: \n  - Orta",
+        "elapsed_sec": 3.66,
+        "char_count": 1151
+      },
+      "temp_0.7": {
+        "output": "- Mevcut Tahmin Değerlendirmesi: LSTM modelinin tahminleri tarihsel veriler ve trendler üzerinden güçlü bir temel oluşturuyor. Ancak, bazı bağlamsal faktörler dikkate alınmamış olabilir.\n  \n- Ayarlama Önerisi: Gerekli\n\n- Ayarlama Yönü ve Aralığı: Yukarı %5-%10\n\n- Gerekçe: \n  - Anneler Günü gibi özel günler, genellikle satışlarda ani artışlara neden olur. Modelin bu tür dönemsel etkileri yeterince yakalayamamış olabileceği değerlendirilmelidir.\n  - Rakip firmanın başlattığı %30 indirim kampanyası, piyasada talep kaymasına neden olabilir. Bu durum, mevcut tahminin hafif yukarı yönlü ayarlanmasını gerektirebilir.\n  - Normalin üstünde sıcaklık, bazı ürün kategorilerinde (örneğin, yazlık giysiler veya soğutucu cihazlar) satış artışına yol açabilir. \n  - Şirketin yeni ürün koleksiyonunun lansmanı, özellikle ilk günlerde ilave satış artışına neden olabilir. Bu etki de model tarafından yeterince hesaba katılmamış olabilir.\n\n- Belirsizlik Notu: Şirketin yeni ürün koleksiyonunun pazarda nasıl bir etki yaratacağı ve rakip indirim kampanyasının müşteriler üzerindeki etkisi hakkında kesin bilgiler yok.\n\n- Güven Seviyesi: Orta",
+        "elapsed_sec": 4.0,
+        "char_count": 1130
+      }
+    }
+  }
+}

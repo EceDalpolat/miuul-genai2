@@ -1,0 +1,43 @@
+{
+  "GPT": {
+    "temp_0.0": {
+      "output": "- Mevcut Tahmin Değerlendirmesi: LSTM modelinin tahmini, geçmiş verilere dayalı olarak oluşturulmuş ve genel bir doğruluk seviyesi sunmaktadır. Ancak, model dışsal faktörleri doğrudan hesaba katmamaktadır.\n\n- Ayarlama Önerisi: Gerekli\n\n- Ayarlama Yönü ve Aralığı: Yukarı, yaklaşık %5-%10\n\n- Gerekçe: \n  - Anneler Günü (5 Mayıs) gibi özel günler genellikle satışlarda artışa neden olur. Bu tür günler, modelin geçmiş verilerden öğrenemediği dışsal faktörlerdir.\n  - Rakip firmanın %30 indirim kampanyası, pazar payını etkileyebilir ve bu durum satışları olumsuz etkileyebilir. Ancak, bu etkinin boyutu belirsizdir.\n  - Hava tahminlerinin normalin üstünde sıcaklık öngörmesi, belirli ürün kategorilerinde (örneğin, yazlık ürünler) satış artışına yol açabilir.\n  - Yeni ürün koleksiyonu lansmanı, genellikle satışlarda artışa neden olur, çünkü tüketiciler yeni ürünleri denemek isteyebilir.\n\n- Belirsizlik Notu: Rakip firmanın indirim kampanyasının etkisi ve hava durumu değişikliklerinin spesifik ürün kategorilerine etkisi hakkında daha fazla bilgiye ihtiyaç vardır.\n\n- Güven Seviyesi: Orta",
+      "elapsed_sec": 9.82,
+      "char_count": 1089
+    },
+    "temp_0.7": {
+      "output": "- Mevcut Tahmin Değerlendirmesi: LSTM modelinin tahminleri genel olarak istikrarlı ve tutarlı bir şekilde gerçekleşiyor. Ancak model, dışsal faktörleri dikkate alamadığı için bazı önemli olaylar tahminlerde eksik olabilir.\n\n- Ayarlama Önerisi: Gerekli\n\n- Ayarlama Yönü ve Aralığı: Yukarı, yaklaşık %10-%15\n\n- Gerekçe: \n  - Anneler Günü, genellikle satışlarda artışa neden olan bir olaydır. LSTM modeli bu tür sezonluk olayları otomatik olarak hesaba katmayabilir.\n  - Rakip firmanın %30 indirim kampanyası, pazar payını bir miktar etkileyebilir, ancak bu etkinin derecesi ürün ve müşteri sadakatine bağlıdır. Bu durum, LSTM modelinin mevcut tahminlerini biraz aşağı çekebilir.\n  - Havanın normalden sıcak olması, bazı ürün kategorilerinde (örneğin yazlık ürünler) talebi artırabilir.\n  - Yeni ürün koleksiyonu lansmanı, genellikle satışlarda bir artışa yol açar. Bu etki, özellikle lansman sonrası ilk günlerde belirgin olabilir.\n  \n- Belirsizlik Notu: Rakip kampanyasının doğrudan etkisinin ne kadar olacağını belirlemek zordur. Ayrıca, hava durumu tahminlerinin kesinliği ve bunun satışlar üzerindeki etkisi belirsizdir.\n\n- Güven Seviyesi: Orta",
+      "elapsed_sec": 5.02,
+      "char_count": 1146
+    },
+    "analiz": {
+      "temp_0.0": {
+        "yasak_sayi_tahmini": 0,
+        "asiri_yorum_riski": 0,
+        "saglikli_belirsiz": 0
+      },
+      "temp_0.7": {
+        "yasak_sayi_tahmini": 0,
+        "asiri_yorum_riski": 0,
+        "saglikli_belirsiz": 0
+      },
+      "uyari": "✅ Her iki temp context içinde kaldı"
+    }
+  },
+  "Gemini": {
+    "temp_0.0": {
+      "error": "HATA [DefaultCredentialsError]: \n  No API_KEY or ADC found. Please either:\n    - Set the `GOOGLE_API_KEY` environment variable.\n    - Manually pass the key with `genai.configure(api_key=my_api_key)`.\n    - Or set up Application Default Credentials, see https://ai.google.dev/gemini-api/docs/oauth for more information."
+    },
+    "temp_0.7": {
+      "error": "HATA [DefaultCredentialsError]: \n  No API_KEY or ADC found. Please either:\n    - Set the `GOOGLE_API_KEY` environment variable.\n    - Manually pass the key with `genai.configure(api_key=my_api_key)`.\n    - Or set up Application Default Credentials, see https://ai.google.dev/gemini-api/docs/oauth for more information."
+    }
+  },
+  "Cohere": {
+    "temp_0.0": {
+      "error": "HATA [ModuleNotFoundError]: No module named 'cohere'"
+    },
+    "temp_0.7": {
+      "error": "HATA [ModuleNotFoundError]: No module named 'cohere'"
+    }
+  }
+}
